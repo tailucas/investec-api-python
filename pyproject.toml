@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "investec-api-python"
+version = "0.1.0"
+description = "Python client for Investec Programmable Banking"
+authors = ["Tai Lucas <tglucas@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "investec_api_python"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+requests = "^2.31.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
