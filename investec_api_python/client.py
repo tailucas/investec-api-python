@@ -66,12 +66,16 @@ class InvestecOpenApiClient:
     def _get_request_headers(self):
         return self._get_base_headers(additional={'Authorization': f'Bearer {self._get_token()}'})
 
-    def query_api_get(self, url) -> dict:
+    def query_api_get(self, url, data=None) -> dict:
         headers = self._get_request_headers()
-        log.debug(f'GET {url} with headers {headers.keys()}')
+        if data is None:
+            log.debug(f'GET {url} with headers {headers.keys()}')
+        else:
+            log.debug(f'GET {url} ({len(data)} bytes) with headers {headers.keys()}')
         response = requests.get(
             url=url,
-            headers=headers)
+            headers=headers,
+            data=data)
         response.raise_for_status()
         return response.json()['data']
 
