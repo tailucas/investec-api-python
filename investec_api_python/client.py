@@ -70,30 +70,22 @@ class InvestecOpenApiClient:
             headers.update(additional)
         return self._get_base_headers(additional=headers)
 
-    def _create_header_and_data(self, data=None, to_json=False):
+    def query_api_get(self, url, params=None) -> dict:
         headers = self._get_request_headers()
-        req_data = data
-        if req_data is not None:
-            if to_json:
-                headers = self._get_request_headers(additional={'Content-Type': 'application/json'})
-                req_data = json.dumps(data)
-        return (headers, req_data)
-
-    def query_api_get(self, url, data=None, to_json=False) -> dict:
-        headers, req_data = self._create_header_and_data(data=data, to_json=to_json)
-        if req_data is None:
+        if params is None:
             log.debug(f'GET {url} with headers {headers.keys()}')
         else:
-            log.debug(f'GET {url} ({len(req_data)} bytes) with headers {headers.keys()}. {req_data=}')
+            log.debug(f'GET {url} with headers {headers.keys()} and parameters {params.keys()}')
         response = requests.get(
             url=url,
             headers=headers,
-            data=req_data)
+            params=params)
         response.raise_for_status()
         return response.json()['data']
 
-    def query_api_post(self, url, data, to_json=False) -> dict:
-        headers, req_data = self._create_header_and_data(data=data, to_json=to_json)
+    def query_api_post(self, url, data) -> dict:
+        headers = self._get_request_headers(additional={'Content-Type': 'application/json'})
+        req_data = json.dumps(data)
         log.debug(f'POST {url} ({len(req_data)} bytes) with headers {headers.keys()}. {req_data=}')
         response = requests.post(
             url=url,

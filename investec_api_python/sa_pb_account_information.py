@@ -23,18 +23,17 @@ class SAPBAccountInformation(InvestecOpenApiClient):
         return self.query_api_get(url)
 
     def get_account_transactions(self, account_id, from_date=None, to_date=None, transaction_type=None) -> dict:
-        args = []
+        params = {}
         if from_date:
-            args.append(f'fromDate={from_date}')
+            params.update({'fromDate': from_date})
         if to_date:
-            args.append(f'toDate={to_date}')
+            params.update({'toDate': to_date})
         if transaction_type:
-            args.append(f'transactionType={transaction_type}')
-        data = None
-        if len(args) > 0:
-            data = '&'.join(args)
+            params.update({'transactionType': transaction_type})
+        if len(params) == 0:
+            params = None
         url = f'{self._url}/za/pb/v1/accounts/{account_id}/transactions'
-        return self.query_api_get(url, data)['transactions']
+        return self.query_api_get(url=url, params=params)['transactions']
 
     def transfer(self, account_id, beneficiary_account_id, amount, my_reference, their_reference) -> dict:
         data = {
@@ -46,7 +45,7 @@ class SAPBAccountInformation(InvestecOpenApiClient):
              }]
         }
         url = f'{self._url}/za/pb/v1/accounts/{account_id}/transfermultiple'
-        return self.query_api_post(url=url, data=data, to_json=True)
+        return self.query_api_post(url=url, data=data)
 
     def pay(self, account_id, beneficiary_id, amount, my_reference, their_reference) -> dict:
         data = {
@@ -58,7 +57,7 @@ class SAPBAccountInformation(InvestecOpenApiClient):
              }]
         }
         url = f'{self._url}/za/pb/v1/accounts/{account_id}/paymultiple'
-        return self.query_api_post(url=url, data=data, to_json=True)
+        return self.query_api_post(url=url, data=data)
 
     def get_beneficiaries(self) -> dict:
         url = f'{self._url}/za/pb/v1/accounts/beneficiaries'
