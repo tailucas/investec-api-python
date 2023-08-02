@@ -1,3 +1,4 @@
+import json
 import logging
 import requests
 
@@ -63,28 +64,41 @@ class InvestecOpenApiClient:
         self._token_expiry = datetime.now() + timedelta(seconds=response['expires_in'])
         return self._access_token
 
-    def _get_request_headers(self):
-        return self._get_base_headers(additional={'Authorization': f'Bearer {self._get_token()}'})
+    def _get_request_headers(self, additional=None):
+        headers = {'Authorization': f'Bearer {self._get_token()}'}
+        if additional:
+            headers.update(additional)
+        return self._get_base_headers(additional=headers)
 
-    def query_api_get(self, url, data=None) -> dict:
+    def _create_header_and_data(self, data=None, to_json=False):
         headers = self._get_request_headers()
-        if data is None:
+        req_data = data
+        if req_data is not None:
+            if to_json:
+                headers = self._get_request_headers(additional={'Content-Type': 'application/json'})
+                req_data = json.dumps(data)
+        return (headers, req_data)
+
+    def query_api_get(self, url, data=None, to_json=False) -> dict:
+        headers, req_data = self._create_header_and_data(data=data, to_json=to_json)
+        if req_data is None:
             log.debug(f'GET {url} with headers {headers.keys()}')
         else:
-            log.debug(f'GET {url} ({len(data)} bytes) with headers {headers.keys()}')
+            log.debug(f'GET {url} ({len(req_data)} bytes) with headers {headers.keys()}. {req_data=}')
         response = requests.get(
             url=url,
             headers=headers,
-            data=data)
+            data=req_data)
         response.raise_for_status()
         return response.json()['data']
 
-    def query_api_post(self, url, data) -> dict:
-        headers = self._get_request_headers()
-        log.debug(f'POST {url} ({len(data)} bytes) with headers {headers.keys()}')
+    def query_api_post(self, url, data, to_json=False) -> dict:
+        headers, req_data = self._create_header_and_data(data=data, to_json=to_json)
+        log.debug(f'POST {url} ({len(req_data)} bytes) with headers {headers.keys()}. {req_data=}')
         response = requests.post(
             url=url,
             headers=headers,
-            data=data)
+            data=req_data)
+        log.debug(f'{response.headers=}: {response.text=}')
         response.raise_for_status()
         return response.json()

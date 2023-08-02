@@ -1,5 +1,3 @@
-import json
-
 from .client import InvestecOpenApiClient
 
 
@@ -40,27 +38,27 @@ class SAPBAccountInformation(InvestecOpenApiClient):
 
     def transfer(self, account_id, beneficiary_account_id, amount, my_reference, their_reference) -> dict:
         data = {
-             'transferList': {
+             'transferList': [{
                 'beneficiaryAccountId': f'{beneficiary_account_id}',
                 'amount': f'{amount}',
                 'myReference': f'{my_reference}',
                 'theirReference': f'{their_reference}'
-             }
+             }]
         }
         url = f'{self._url}/za/pb/v1/accounts/{account_id}/transfermultiple'
-        return self.query_api_post(url, json.dumps(data))
+        return self.query_api_post(url=url, data=data, to_json=True)
 
     def pay(self, account_id, beneficiary_id, amount, my_reference, their_reference) -> dict:
         data = {
-             'paymentList': {
+             'paymentList': [{
                 'beneficiaryId': f'{beneficiary_id}',
                 'amount': f'{amount}',
                 'myReference': f'{my_reference}',
                 'theirReference': f'{their_reference}'
-             }
+             }]
         }
         url = f'{self._url}/za/pb/v1/accounts/{account_id}/paymultiple'
-        return self.query_api_post(url, json.dumps(data))
+        return self.query_api_post(url=url, data=data, to_json=True)
 
     def get_beneficiaries(self) -> dict:
         url = f'{self._url}/za/pb/v1/accounts/beneficiaries'
