@@ -5,4 +5,4 @@ URL_PRODUCTION = f'https://{ENDPOINT_PRODUCTION}'
 DEFAULT_REQUEST_HEADERS = {
    'Accept': 'application/json'
 }
-from .sa_pb_account_information import SAPBAccountInformation
+from .client import InvestecOpenApiClient
