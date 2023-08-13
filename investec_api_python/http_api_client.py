@@ -5,6 +5,7 @@ import requests
 
 from datetime import datetime, timedelta
 from requests.auth import HTTPBasicAuth
+from typing import Dict, Tuple, Optional
 
 from . import (
    DEFAULT_REQUEST_HEADERS,
@@ -18,29 +19,35 @@ log = logging.getLogger()
 
 
 class HttpApiClient:
-    _client_id = None
-    _secret = None
-    _api_key = None
-    _host = None
-    _url = None
-    _additional_headers = None
-    _access_token = None
-    _token_expiry = datetime.now()
 
-    def __init__(self, client_id, secret, api_key, use_sandbox=False, additional_headers=None):
-        self._client_id = client_id
-        self._secret = secret
-        self._api_key = api_key
-        self._host = ENDPOINT_PRODUCTION
-        self._url = URL_PRODUCTION
+    @property
+    def access_token(self) -> Optional[str]:
+        return self._access_token
+
+    @property
+    def access_token_expiry(self) -> Optional[datetime]:
+        return self._token_expiry
+
+    def __init__(self, client_id: str, secret: str, api_key: str, use_sandbox: bool=False, additional_headers: Optional[Dict[str, str]]=None, access_token: Optional[Tuple[str, datetime]]=None):
+        self._client_id: str = client_id
+        self._secret: str = secret
+        self._api_key: str = api_key
+        self._host: str = ENDPOINT_PRODUCTION
+        self._url: str = URL_PRODUCTION
         if use_sandbox:
             self._host = ENDPOINT_SANDBOX
             self._url = URL_SANDBOX
+        self._additional_headers: Optional[Dict[str, str]] = additional_headers
+        self._access_token: Optional[str] = None
+        self._token_expiry: Optional[datetime] = None
+        if access_token:
+            self._access_token, self._token_expiry = access_token
 
     def _get_token(self) -> str:
-        access_token_expiry = datetime.now() + timedelta(seconds=60)
-        if self._access_token is not None or self._token_expiry >= access_token_expiry:
-            return self._access_token
+        # treat access token as expired a minute ahead of actual expiry
+        if self._access_token and self._token_expiry:
+            if self._token_expiry + timedelta(seconds=60) >= datetime.now():
+                return self._access_token
 
         url = f'{self._url}/identity/v2/oauth2/token'
         headers = self._get_base_headers(additional={'Content-Type': 'application/x-www-form-urlencoded', 'x-api-key': self._api_key})
@@ -57,8 +64,7 @@ class HttpApiClient:
         self._token_expiry = datetime.now() + timedelta(seconds=response['expires_in'])
         return self._access_token
 
-
-    def _get_base_headers(self, additional=None) -> dict:
+    def _get_base_headers(self, additional: Optional[Dict[str, str]]=None) -> Dict:
         headers = dict(DEFAULT_REQUEST_HEADERS)
         headers['Host'] = self._host
         if additional:
@@ -67,13 +73,13 @@ class HttpApiClient:
             headers.update(self._additional_headers)
         return headers
 
-    def _get_request_headers(self, additional=None):
+    def _get_request_headers(self, additional: Optional[Dict[str, str]]=None):
         headers = {'Authorization': f'Bearer {self._get_token()}'}
         if additional:
             headers.update(additional)
         return self._get_base_headers(additional=headers)
 
-    def _query_api_get(self, url, params=None) -> dict:
+    def _query_api_get(self, url: str, params: Optional[Dict[str, str]]=None) -> Dict:
         headers = self._get_request_headers()
         if params is None:
             log.debug(f'GET {url} with headers {headers.keys()}')
@@ -86,7 +92,7 @@ class HttpApiClient:
         response.raise_for_status()
         return response.json()['data']
 
-    def _query_api_post(self, url, data) -> dict:
+    def _query_api_post(self, url: str, data: str) -> Dict:
         headers = self._get_request_headers(additional={'Content-Type': 'application/json'})
         req_data = json.dumps(data)
         log.debug(f'POST {url} ({len(req_data)} bytes) with headers {headers.keys()}. {req_data=}')
