@@ -30,7 +30,9 @@ A simple Python client library to interact with the [Investec Bank API][investec
 <!-- SETUP -->
 ## Setup
 
-Install [Poetry][python-poetry-url] for dependency and runtime management, which already references the submodule in the `pyproject.toml` configuration. Follow the instructions on the Poetry site [here][python-poetry-install-url].
+Get the package on [PyPi][pypi-project-url].
+
+I recommend the use of [Poetry][python-poetry-url] for dependency and runtime management. Follow the instructions on the Poetry site [here][python-poetry-install-url].
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -100,3 +102,4 @@ This project benefits from these supporting projects:
 [openapi-generator-url]: https://github.com/OpenAPITools/openapi-generator/tree/master
 
 [pypi-url]: https://pypi.org/
+[pypi-project-url]: https://pypi.org/project/investec-api-python/
