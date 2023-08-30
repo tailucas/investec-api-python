@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "investec-api-python"
-version = "0.1.0"
+version = "0.0.1"
 description = "Python client for Investec Programmable Banking"
 authors = ["Tai Lucas <tglucas@gmail.com>"]
 license = "MIT"
