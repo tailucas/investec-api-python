@@ -55,7 +55,7 @@ Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
 Additional well-established Python clients built by the Investec Programmable Banking [community][investec-open-api-url]:
 
 * [ipb-python-wrapper][ipb-python-wrapper-url]
-* [investec-open-api-python][investec-open-banking-url]
+* [investec-open-api-python][investec-open-api-python-url]
 * [investec-openbanking-python][investec-open-banking-url]
 
 Investec Open API:
