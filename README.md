@@ -24,8 +24,6 @@ A simple Python client library to interact with the [Investec Bank API][investec
 
 1. At the time of writing, API support is limited to the [account scope][investec-open-api-docs-url] and limited [card scope][investec-open-api-docs-card-url]. Pull requests are welcome.
 2. Although Investec Bank publish their API schema as an Open API specification, I had [specific][openapi3-python-path-url] difficulty in generating a client from only the JSON schema files using a few [options][openapi-generator-url]. More experimentation is needed to obviate the need to write a client from first principles.
-3. This library is not yet published to the Python Package Index ([PyPi][pypi-url]).
-
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
